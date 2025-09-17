@@ -50,7 +50,17 @@ app.get('/users',async(req,res)=>{
 app.get('/iit/:iitId',async(req,res)=>{
     try{
         const {iitId} = req.params;
-        const result = await pool.query('SELECT * FROM jeeadv_2025_seat_allotment WHERE iit=$1 ORDER BY rank,ews_rank,obc_rank,sc_rank,st_rank',[iitId]);
+        const {branch , category , max_rank} = req.query;
+        let query= 'SELECT * FROM jeeadv_2025_seat_allotment WHERE iit=$1';
+        let params=[iitId];
+        let paramIndex=2;
+        if(branch){
+            query+=` AND branch=$${paramIndex}`;
+            params.push(branch);
+            paramIndex++;
+        }
+        query +=  ' ORDER BY rank,ews_rank,obc_rank,sc_rank,st_rank';
+        const result = await pool.query(query,params);
         res.json({
             success:true,
             data:result.rows,
@@ -65,6 +75,7 @@ app.get('/iit/:iitId',async(req,res)=>{
     }
 })
 
+//app.get('')
 
 
 
