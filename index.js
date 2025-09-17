@@ -26,7 +26,7 @@ pool.connect((err,client,release)=>{
     if(err){
         console.error('Error acquiring client',err.stack);
     }
-    console.log('Connected to PostreSQL database');
+    console.log('Connected to PostgreSQL database');
     release();
 })
 
@@ -51,7 +51,7 @@ app.get('/iit/:iitId',async(req,res)=>{
     try{
         const {iitId} = req.params;
         const {branch , category } = req.query;
-        let query= 'SELECT * FROM jeeadv_2025_seat_allotment WHERE iit=$1';
+        let query= `SELECT * FROM jeeadv_2025_seat_allotment WHERE iit=$1`;
         let params=[iitId];
         let paramIndex=2;
         if(branch){
