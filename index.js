@@ -50,7 +50,7 @@ app.get('/users',async(req,res)=>{
 app.get('/iit/:iitId',async(req,res)=>{
     try{
         const {iitId} = req.params;
-        const {branch , category , max_rank} = req.query;
+        const {branch , category } = req.query;
         let query= 'SELECT * FROM jeeadv_2025_seat_allotment WHERE iit=$1';
         let params=[iitId];
         let paramIndex=2;
@@ -58,6 +58,27 @@ app.get('/iit/:iitId',async(req,res)=>{
             query+=` AND branch=$${paramIndex}`;
             params.push(branch);
             paramIndex++;
+        }
+        if(category){
+            let catColumn;
+            switch(category.toUpperCase()){
+                case 'EWS':
+                    catColumn='ews_rank';
+                    break;
+                case 'OBC':
+                    catColumn='obc_rank';
+                    break;
+                case 'SC':
+                    catColumn='sc_rank';
+                    break;
+                case 'ST':
+                    catColumn='st_rank';
+                    break;
+                default:
+                     catColumn=category;
+                     break;
+            }
+            query+= ` AND ${catColumn} IS NOT NULL`;
         }
         query +=  ' ORDER BY rank,ews_rank,obc_rank,sc_rank,st_rank';
         const result = await pool.query(query,params);
