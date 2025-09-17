@@ -96,7 +96,47 @@ app.get('/iit/:iitId',async(req,res)=>{
     }
 })
 
-//app.get('')
+app.get('/category/:category',async(req,res)=>{
+    try{
+        const {category} = req.params;
+        const {iit , branch } = req.query;
+        const validCategoryColumns = {
+            'rank': 'rank',
+            'ews': 'ews_rank',
+            'obc': 'obc_rank',
+            'sc': 'sc_rank',
+            'st': 'st_rank',
+            'open': 'rank' // Map common names to actual column names
+        };
+        const categoryColumn = validCategoryColumns[category.toLowerCase()];
+        let query = `SELECT * FROM jeeadv_2025_seat_allotment WHERE ${categoryColumn} IS NOT NULL`;
+        let params=[];
+        let paramIndex=1;
+        if(branch){
+            query+=` AND branch=$${paramIndex}`;
+            params.push(branch);
+            paramIndex++;
+        }
+        if(iit){
+            query+= ` AND iit=$${paramIndex}`;
+            params.push(iit);
+            paramIndex++;
+        }
+        query +=  ' ORDER BY rank,ews_rank,obc_rank,sc_rank,st_rank';
+        const result = await pool.query(query,params);
+        res.json({
+            success:true,
+            data:result.rows,
+            count:result.rowCount
+        })
+    }catch(err){
+        console.error('Error fetching users',err);
+        res.status(500).json({
+            success:false,
+            error: 'Internal server error'
+        })
+    }
+})
 
 
 
