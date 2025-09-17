@@ -1,8 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const {Pool} = require('pg');
-//const helmet = require('helmet');
-//const morgan = require('morgan');
+const helmet = require('helmet');
+const morgan = require('morgan');
 require('dotenv').config();
 
 const app = express();
@@ -20,6 +20,8 @@ const pool = new Pool({
 });
 app.use(cors());
 app.use(express.json());
+app.use(helmet());
+app.use(morgan('combined'));
 app.use(express.urlencoded({ extended: true }));
 
 pool.connect((err,client,release)=>{
