@@ -61,7 +61,10 @@ app.get('/iit/:iitId',async(req,res)=>{
             params.push(branch);
             paramIndex++;
         }
-        if(category){
+        if(category==='open'){
+            query+=` AND rank IS NOT NULL`;
+        }
+        else if(category){
             let catColumn;
             switch(category.toUpperCase()){
                 case 'EWS':
@@ -77,7 +80,6 @@ app.get('/iit/:iitId',async(req,res)=>{
                     catColumn='st_rank';
                     break;
                 default:
-                     catColumn=category;
                      break;
             }
             query+= ` AND ${catColumn} IS NOT NULL`;
@@ -123,6 +125,9 @@ app.get('/category/:category',async(req,res)=>{
             query+= ` AND iit=$${paramIndex}`;
             params.push(iit);
             paramIndex++;
+        }
+        if(category==='open'){
+            query+= ` AND rank IS NOT NULL`;
         }
         query +=  ' ORDER BY rank,ews_rank,obc_rank,sc_rank,st_rank';
         const result = await pool.query(query,params);
